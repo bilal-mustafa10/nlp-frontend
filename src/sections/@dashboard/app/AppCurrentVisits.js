@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import ReactApexChart from 'react-apexcharts';
 // @mui
 import { useTheme, styled } from '@mui/material/styles';
-import { Card, CardHeader } from '@mui/material';
+import {Card, CardHeader, Stack} from '@mui/material';
 // utils
 import { fNumber } from '../../../utils/formatNumber';
 // components
 import { useChart } from '../../../components/chart';
+import {BlogPostsSort} from "../blog";
 
 // ----------------------------------------------------------------------
 
@@ -41,6 +42,12 @@ AppCurrentVisits.propTypes = {
 export default function AppCurrentVisits({ title, subheader, chartColors, chartData, ...other }) {
   const theme = useTheme();
 
+  const SORT_OPTIONS = [
+    { value: 'latest', label: 'Latest' },
+    { value: 'popular', label: 'Popular' },
+    { value: 'oldest', label: 'Oldest' },
+  ];
+
   const chartLabels = chartData.map((i) => i.label);
 
   const chartSeries = chartData.map((i) => i.value);
@@ -67,8 +74,9 @@ export default function AppCurrentVisits({ title, subheader, chartColors, chartD
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
-
+      <Stack mb={2} direction="row" alignItems="center" padding={2}>
+        <BlogPostsSort options={SORT_OPTIONS} />
+      </Stack>
       <StyledChartWrapper dir="ltr">
         <ReactApexChart type="pie" series={chartSeries} options={chartOptions} height={280} />
       </StyledChartWrapper>

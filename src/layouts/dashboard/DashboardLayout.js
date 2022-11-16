@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 //
 import Header from './header';
+import Nav from "./nav";
 
 // ----------------------------------------------------------------------
 
@@ -37,6 +38,7 @@ export default function DashboardLayout() {
   return (
     <StyledRoot>
      {/* <Header onOpenNav={() => setOpen(true)} /> */}
+      <Nav openNav={open} onCloseNav={() => setOpen(false)} />
       <Main>
         <Outlet />
       </Main>

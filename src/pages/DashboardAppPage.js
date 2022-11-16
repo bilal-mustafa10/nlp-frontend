@@ -1,8 +1,9 @@
 import { Helmet } from 'react-helmet-async';
+import { Icon } from '@iconify/react';
 import { faker } from '@faker-js/faker';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography } from '@mui/material';
+import {Grid, Container, Typography, Stack} from '@mui/material';
 // components
 import Iconify from '../components/iconify';
 // sections
@@ -17,11 +18,33 @@ import {
   AppCurrentSubject,
   AppConversionRates,
 } from '../sections/@dashboard/app';
+import {useEffect, useState} from "react";
+import {BlogPostsSearch, BlogPostsSort} from "../sections/@dashboard/blog";
+import POSTS from "../_mock/blog";
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
+    const [data, setData] = useState(null);
+
+  useEffect( () => {
+
+      const getData = async () => {
+          await fetch("http://127.0.0.1:8000/sethu").then((res) => {
+              console.log("Response:", res);
+              res.json().then((data) => {
+                  console.log("Data:", data);
+                  setData(data);
+              })
+          });
+      }
+
+      if (data === null){
+          getData();
+      }
+
+  },[data]);
 
   return (
     <>
@@ -34,22 +57,29 @@ export default function DashboardAppPage() {
           NLP Hackathon
         </Typography>
 
+          <Typography variant="h6" sx={{ mb: 2 }}>
+              Snack Stats (most mentioned country)
+          </Typography>
+
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Weekly Sales" total={714000} icon={'ant-design:android-filled'} />
+            <AppWidgetSummary name="Popcorn" title="North America" total={4905} color="secondary" icon={require('../assets/popcorn.png')} />
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
-          </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+                <AppWidgetSummary name="Pretzel" title="North America" total={1351} color="info" icon={require('../assets/pretzel.png')} />
+            </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Item Orders" total={1723315} color="warning" icon={'ant-design:windows-filled'} />
-          </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+                <AppWidgetSummary name="Chocolate" title="North America" total={761} color="warning" icon={require('../assets/chocolate.png')} />
+            </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
-            <AppWidgetSummary title="Bug Reports" total={234} color="error" icon={'ant-design:bug-filled'} />
-          </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+                <AppWidgetSummary name="Walnut" title="North America" total={390} color="error" icon={require('../assets/walnut.png')} />
+            </Grid>
+
+
+
 
           <Grid item xs={12} md={6} lg={8}>
             <AppWebsiteVisits
@@ -128,7 +158,7 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
+          {/*<Grid item xs={12} md={6} lg={4}>
             <AppCurrentSubject
               title="Current Subject"
               chartLabels={['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math']}
@@ -139,9 +169,9 @@ export default function DashboardAppPage() {
               ]}
               chartColors={[...Array(6)].map(() => theme.palette.text.secondary)}
             />
-          </Grid>
+          </Grid>*/}
 
-          <Grid item xs={12} md={6} lg={8}>
+          <Grid item xs={12} md={6} lg={4}>
             <AppNewsUpdate
               title="News Update"
               list={[...Array(5)].map((_, index) => ({
@@ -200,7 +230,7 @@ export default function DashboardAppPage() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
+          {/*<Grid item xs={12} md={6} lg={8}>
             <AppTasks
               title="Tasks"
               list={[
@@ -211,7 +241,7 @@ export default function DashboardAppPage() {
                 { id: '5', label: 'Sprint Showcase' },
               ]}
             />
-          </Grid>
+          </Grid>*/}
         </Grid>
       </Container>
     </>
