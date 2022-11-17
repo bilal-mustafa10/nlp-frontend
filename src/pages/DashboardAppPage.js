@@ -1,7 +1,19 @@
 import { Helmet } from 'react-helmet-async';
 import { Icon } from '@iconify/react';
 import { faker } from '@faker-js/faker';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend } from 'recharts';
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Legend,
+    Cell, Line
+} from 'recharts';
 // @mui
 import { useTheme } from '@mui/material/styles';
 import {Grid, Container, Typography, Stack, Card, MenuItem, TextField} from '@mui/material';
@@ -34,6 +46,7 @@ export default function DashboardAppPage() {
     const [sentimentGraphData, setSentimentGraphData] = useState(null);
     const [pieChartData, setPieChartData] = useState(null);
     const [pieChartSelection, setPieChartSelection] = useState('popcorn');
+    const [sentimentSelection, setSentimentSelection] = useState('popcorn');
 
     const SORT_OPTIONS = [
         { value: 'popcorn', label: 'popcorn' },
@@ -60,6 +73,22 @@ export default function DashboardAppPage() {
         });
     }
 
+    const getData = async (snack) => {
+        await fetch("http://127.0.0.1:8000/snack/sentiment/",{
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({snack:snack})
+
+        }).then((res) => {
+            res.json().then((data) => {
+                setSentimentGraphData(data);
+            })
+        });
+    }
+
     useEffect(() => {
         if (pieChartData === null){
             getPieChartData('popcorn').then(r => console.log('initial'))
@@ -69,28 +98,13 @@ export default function DashboardAppPage() {
 
 
 
+    const COLORS = ['#22577A', '#57CC99', '#EF5B5B', '#F28F3B','#C8553D'];
 
 
   useEffect( () => {
 
-      const getData = async () => {
-          await fetch("http://127.0.0.1:8000/snack/sentiment/",{
-              method: 'POST',
-              headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({snack:"popcorn"})
-
-          }).then((res) => {
-              res.json().then((data) => {
-                  setSentimentGraphData(data);
-              })
-          });
-      }
-
       if (sentimentGraphData === null){
-          getData().then(() => console.log(sentimentGraphData));
+          getData('popcorn').then(() => console.log(sentimentGraphData));
 
       }else{
           console.log(sentimentGraphData);
@@ -121,10 +135,6 @@ export default function DashboardAppPage() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Typography variant="h4" sx={{ mb: 5 }}>
-          NLP Hackathon
-        </Typography>
-
           <Typography variant="h6" sx={{ mb: 2 }}>
               Snack Stats (most mentioned country)
           </Typography>
@@ -150,6 +160,22 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={6} lg={8}>
               {sentimentGraphData !== null &&
                   <Card>
+                      <Typography variant="h4" textAlign={'center'} padding={2}>
+                          Sentiment of a snack over a period of time
+                      </Typography>
+                      <Stack direction="row" alignItems="center" padding={2}>
+                          <TextField select size="small" value={sentimentSelection} onChange={(event) => {
+                              setSentimentSelection(event.target.value)
+                              getData(event.target.value).then(() => console.log(sentimentGraphData));
+
+                          }}>
+                              {SORT_OPTIONS.map((options) => (
+                                  <MenuItem key={options.value} value={options.value}>
+                                      {options.label}
+                                  </MenuItem>
+                              ))}
+                          </TextField>
+                      </Stack>
                       <ResponsiveContainer width="100%" height={480} alignSelf={"center"}>
                           <AreaChart
                               width={1200}
@@ -184,7 +210,7 @@ export default function DashboardAppPage() {
           <Grid item xs={12} md={6} lg={4}>
               {pieChartData !== null &&
                   <Card>
-                      <Stack mb={2} direction="row" alignItems="center" padding={2}>
+                      <Stack mb={0} direction="row" alignItems="center" padding={2}>
                           <TextField select size="small" value={pieChartSelection} onChange={(event) => {
                               setPieChartSelection(event.target.value)
                               getPieChartData(event.target.value).then(r => console.log('updated-noww'));
@@ -197,10 +223,20 @@ export default function DashboardAppPage() {
                               ))}
                           </TextField>
                       </Stack>
-                      <div style={{ width: '100%', height: 300 }}>
+                      <div style={{ width: '100%', height: 550 }}>
                           <ResponsiveContainer>
-                              <PieChart>
-                                  <Pie dataKey="value" data={pieChartData} fill="#8884d8" label />
+                              <PieChart width={400} height={400}>
+                                  <Legend iconSize={14} layout="horizontal"  align="center" />
+                                  <Pie
+                                      dataKey="value"
+                                      data={pieChartData}
+                                      fill="#8884d8"
+                                  >
+                                      {pieChartData.map((entry, index) => (
+                                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                      ))}
+
+                                  </Pie>
                               </PieChart>
                           </ResponsiveContainer>
                       </div>
@@ -210,7 +246,7 @@ export default function DashboardAppPage() {
 
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
+          {/*<Grid item xs={12} md={6} lg={8}>
             <AppConversionRates
               title="Conversion Rates"
               subheader="(+43%) than last year"
@@ -227,7 +263,7 @@ export default function DashboardAppPage() {
                 { label: 'United Kingdom', value: 1380 },
               ]}
             />
-          </Grid>
+          </Grid>*/}
 
           {/*<Grid item xs={12} md={6} lg={4}>
             <AppCurrentSubject
@@ -241,8 +277,7 @@ export default function DashboardAppPage() {
               chartColors={[...Array(6)].map(() => theme.palette.text.secondary)}
             />
           </Grid>*/}
-
-          <Grid item xs={12} md={6} lg={4}>
+            {/*Grid item xs={12} md={6} lg={4}>
             <AppNewsUpdate
               title="News Update"
               list={[...Array(5)].map((_, index) => ({
@@ -299,7 +334,7 @@ export default function DashboardAppPage() {
                 },
               ]}
             />
-          </Grid>
+          </Grid>*/}
 
           {/*<Grid item xs={12} md={6} lg={8}>
             <AppTasks

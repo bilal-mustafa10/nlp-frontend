@@ -85,7 +85,7 @@ export default function UserPage() {
                 type={'text'}
             />
           </Stack>
-
+          <Typography> --- OR --- </Typography>
           {isListening ?
               <Button variant="contained" onClick={()=>{
                 SpeechRecognition.stopListening()
@@ -96,7 +96,7 @@ export default function UserPage() {
               </Button>
               :
               <>
-                <Stack direction="row" alignItems="center" justifyContent="center" mb={10}>
+                <Stack direction="row" alignItems="center" justifyContent="center" mb={10} spacing={2}>
                   <Button variant="contained" onClick={() => {
                     setIsListening(true)
                     SpeechRecognition.startListening()
