@@ -12,11 +12,11 @@ const navConfig = [
     icon: icon('ic_analytics'),
   },
   {
-    title: 'user',
-    path: '/dashboard/user',
+    title: 'AlphaBrain',
+    path: '/dashboard/alphabrain',
     icon: icon('ic_user'),
   },
-  {
+  /*{
     title: 'product',
     path: '/dashboard/products',
     icon: icon('ic_cart'),
@@ -35,7 +35,7 @@ const navConfig = [
     title: 'Not found',
     path: '/404',
     icon: icon('ic_disabled'),
-  },
+  },*/
 ];
 
 export default navConfig;

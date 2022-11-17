@@ -8,13 +8,14 @@ import { fNumber } from '../../../utils/formatNumber';
 // components
 import { useChart } from '../../../components/chart';
 import {BlogPostsSort} from "../blog";
+import {useState} from "react";
 
 // ----------------------------------------------------------------------
 
 const CHART_HEIGHT = 372;
 const LEGEND_HEIGHT = 72;
 
-const StyledChartWrapper = styled('div')(({ theme }) => ({
+export const StyledChartWrapper = styled('div')(({ theme }) => ({
   height: CHART_HEIGHT,
   marginTop: theme.spacing(5),
   '& .apexcharts-canvas svg': { height: CHART_HEIGHT },
@@ -43,14 +44,18 @@ export default function AppCurrentVisits({ title, subheader, chartColors, chartD
   const theme = useTheme();
 
   const SORT_OPTIONS = [
-    { value: 'latest', label: 'Latest' },
-    { value: 'popular', label: 'Popular' },
-    { value: 'oldest', label: 'Oldest' },
+    { value: 'popcorn', label: 'popcorn' },
+    { value: 'pretzel', label: 'pretzel' },
+    { value: 'chocolate', label: 'chocolate' },
+    { value: 'walnut', label: 'walnut' },
   ];
+
 
   const chartLabels = chartData.map((i) => i.label);
 
   const chartSeries = chartData.map((i) => i.value);
+
+  const [pieChartSelection, setPieChartSelection] = useState('popcorn');
 
   const chartOptions = useChart({
     colors: chartColors,
@@ -75,7 +80,7 @@ export default function AppCurrentVisits({ title, subheader, chartColors, chartD
   return (
     <Card {...other}>
       <Stack mb={2} direction="row" alignItems="center" padding={2}>
-        <BlogPostsSort options={SORT_OPTIONS} />
+        <BlogPostsSort options={SORT_OPTIONS} value={pieChartSelection} />
       </Stack>
       <StyledChartWrapper dir="ltr">
         <ReactApexChart type="pie" series={chartSeries} options={chartOptions} height={280} />

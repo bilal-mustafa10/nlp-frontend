@@ -1,9 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { Icon } from '@iconify/react';
 import { faker } from '@faker-js/faker';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Legend } from 'recharts';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import {Grid, Container, Typography, Stack} from '@mui/material';
+import {Grid, Container, Typography, Stack, Card, MenuItem, TextField} from '@mui/material';
 // components
 import Iconify from '../components/iconify';
 // sections
@@ -19,32 +20,99 @@ import {
   AppConversionRates,
 } from '../sections/@dashboard/app';
 import {useEffect, useState} from "react";
-import {BlogPostsSearch, BlogPostsSort} from "../sections/@dashboard/blog";
-import POSTS from "../_mock/blog";
+import {pieChartDataUpdated, pieChartSelect} from "../sections/@dashboard/blog/BlogPostsSort";
+import {BlogPostsSort} from "../sections/@dashboard/blog";
+import ReactApexChart from "react-apexcharts";
+import {useChart} from "../components/chart";
+import {fNumber} from "../utils/formatNumber";
+import {StyledChartWrapper} from "../sections/@dashboard/app/AppCurrentVisits";
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-    const [data, setData] = useState(null);
+    const [sentimentGraphData, setSentimentGraphData] = useState(null);
+    const [pieChartData, setPieChartData] = useState(null);
+    const [pieChartSelection, setPieChartSelection] = useState('popcorn');
+
+    const SORT_OPTIONS = [
+        { value: 'popcorn', label: 'popcorn' },
+        { value: 'pretzel', label: 'pretzel' },
+        { value: 'chocolate', label: 'chocolate' },
+        { value: 'walnut', label: 'walnut' },
+    ];
+
+    const getPieChartData = async (snack) => {
+        console.log("Snack: ",snack);
+        await fetch("http://127.0.0.1:8000/snack/piechart/", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({snack: snack})
+
+        }).then((res) => {
+            res.json().then((data) => {
+                setPieChartData(data);
+                console.log("Data:", data)
+            })
+        });
+    }
+
+    useEffect(() => {
+        if (pieChartData === null){
+            getPieChartData('popcorn').then(r => console.log('initial'))
+        }
+
+    },[pieChartData])
+
+
+
+
 
   useEffect( () => {
 
       const getData = async () => {
-          await fetch("http://127.0.0.1:8000/sethu").then((res) => {
-              console.log("Response:", res);
+          await fetch("http://127.0.0.1:8000/snack/sentiment/",{
+              method: 'POST',
+              headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({snack:"popcorn"})
+
+          }).then((res) => {
               res.json().then((data) => {
-                  console.log("Data:", data);
-                  setData(data);
+                  setSentimentGraphData(data);
               })
           });
       }
 
-      if (data === null){
-          getData();
+      if (sentimentGraphData === null){
+          getData().then(() => console.log(sentimentGraphData));
+
+      }else{
+          console.log(sentimentGraphData);
       }
 
-  },[data]);
+
+  },[sentimentGraphData]);
+
+    const gradientOffset = () => {
+        const dataMax = Math.max(...sentimentGraphData.map((i) => i.doc_sentiment));
+        const dataMin = Math.min(...sentimentGraphData.map((i) => i.doc_sentiment));
+
+        if (dataMax <= 0) {
+            return 0;
+        }
+        if (dataMin >= 0) {
+            return 1;
+        }
+
+        return dataMax / (dataMax - dataMin);
+    };
+
 
   return (
     <>
@@ -79,64 +147,67 @@ export default function DashboardAppPage() {
             </Grid>
 
 
-
-
           <Grid item xs={12} md={6} lg={8}>
-            <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ]}
-            />
+              {sentimentGraphData !== null &&
+                  <Card>
+                      <ResponsiveContainer width="100%" height={480} alignSelf={"center"}>
+                          <AreaChart
+                              width={1200}
+                              height={500}
+                              data={sentimentGraphData}
+                              margin={{
+                                  top: 10,
+                                  right: 30,
+                                  left: 5,
+                                  bottom: 5,
+                              }}
+                          >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="doc_date" />
+                              <YAxis />
+                              <Tooltip />
+                              <defs>
+                                  <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset={gradientOffset()} stopColor="green" stopOpacity={1} />
+                                      <stop offset={gradientOffset()} stopColor="red" stopOpacity={1} />
+                                  </linearGradient>
+                              </defs>
+                              <Area type="monotone" dataKey="doc_sentiment" stroke="#000" fill="url(#splitColor)" />
+                          </AreaChart>
+                      </ResponsiveContainer>
+                  </Card>
+              }
+
+
           </Grid>
 
           <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentVisits
-              title="Current Visits"
-              chartData={[
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ]}
-              chartColors={[
-                theme.palette.primary.main,
-                theme.palette.info.main,
-                theme.palette.warning.main,
-                theme.palette.error.main,
-              ]}
-            />
+              {pieChartData !== null &&
+                  <Card>
+                      <Stack mb={2} direction="row" alignItems="center" padding={2}>
+                          <TextField select size="small" value={pieChartSelection} onChange={(event) => {
+                              setPieChartSelection(event.target.value)
+                              getPieChartData(event.target.value).then(r => console.log('updated-noww'));
+
+                          }}>
+                              {SORT_OPTIONS.map((options) => (
+                                  <MenuItem key={options.value} value={options.value}>
+                                      {options.label}
+                                  </MenuItem>
+                              ))}
+                          </TextField>
+                      </Stack>
+                      <div style={{ width: '100%', height: 300 }}>
+                          <ResponsiveContainer>
+                              <PieChart>
+                                  <Pie dataKey="value" data={pieChartData} fill="#8884d8" label />
+                              </PieChart>
+                          </ResponsiveContainer>
+                      </div>
+                  </Card>
+              }
+
+
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
