@@ -226,7 +226,7 @@ export default function DashboardAppPage() {
                       <div style={{ width: '100%', height: 550 }}>
                           <ResponsiveContainer>
                               <PieChart width={400} height={400}>
-                                  <Legend iconSize={14} layout="horizontal"  align="center" />
+                                  <Legend iconSize={18} layout="horizontal"  align="center" />
                                   <Pie
                                       dataKey="value"
                                       data={pieChartData}
