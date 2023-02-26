@@ -1,40 +1,14 @@
-## Minimal [(Free version)](https://minimal-kit-react.vercel.app/)
 
-![license](https://img.shields.io/badge/license-MIT-blue.svg)
+# NLP Hackathon - Analysis of Snacks
 
-> Free React Admin Dashboard made with Material-UI components and React.
+![My Image](./src/assets/demo.png)
 
-![preview](public/assets/preview.jpg)
+## Description
+The source code for a demonstration website created during Amplyfi's NLP Hackathon challenge can be found in this GitHub repository. The project is centered around conducting various analyses on different varieties of snacks, and the website also incorporates a feature called "AlphaBrain," which allows users to ask snack-related questions and receive answers from the website. The code is available for consultation and future enhancements.
 
-| [Minimal Free](https://minimal-kit-react.vercel.app/) | [Minimal](https://material-ui.com/store/items/minimal-dashboard/) |
-| ----------------------------------------------------- | :---------------------------------------------------------------- |
-| **6** Demo pages                                      | **50+** demo pages                                                |
-| -                                                     | ✓ Multi-language                                                  |
-| -                                                     | ✓ Dark/Light Mode 🌓                                              |
-| -                                                     | ✓ [More components](https://minimals.cc/components)               |
-| -                                                     | ✓ Next.js version                                                 |
-| -                                                     | ✓ TypeScript version                                              |
-| -                                                     | ✓ Design files (Figma & Sketch)                                   |
 
-## Page demo
+## Team
 
-- [Dashboard](https://minimal-kit-react.vercel.app/dashboard/app)
-- [Users](https://minimal-kit-react.vercel.app/dashboard/user)
-- [Product](https://minimal-kit-react.vercel.app/dashboard/products)
-- [Blog](https://minimal-kit-react.vercel.app/dashboard/blog)
-- [Login](https://minimal-kit-react.vercel.app/login)
-- [Not Found](https://minimal-kit-react.vercel.app/404)
+- [@bilal-mustafa10](https://github.com/bilal-mustafa10)
+- [@sethupavan12](https://github.com/sethupavan12)
 
-## Getting started
-
-- Recommended `node js 16.x` and `npm 6+`. (suggestion v16.15.0)
-- Install dependencies: `npm install` / `yarn install`
-- Start the project: `npm run start` / `yarn start`
-
-## License
-
-Distributed under the MIT License. See [LICENSE](https://github.com/minimal-ui-kit/minimal.free/blob/main/LICENSE.md) for more information.
-
-## Contact us
-
-Email Us: support@minimals.cc
